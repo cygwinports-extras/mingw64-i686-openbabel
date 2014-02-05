@@ -1,0 +1,43 @@
+--- origsrc/openbabel-2.3.2/CMakeLists.txt	2012-10-03 14:08:58.000000000 -0500
++++ src/openbabel-2.3.2/CMakeLists.txt	2014-02-04 22:31:46.198324100 -0600
+@@ -44,7 +44,7 @@ option(ENABLE_VERSIONED_FORMATS
+ set(BIN_INSTALL_DIR      "bin"
+   CACHE PATH "Install dir for binaries")
+ set(LIB_SUFFIX "" CACHE STRING "Suffix of the directory name, e.g. 64 for lib64")
+-if(UNIX)
++if(NOT MSVC)
+   set(LIB_INSTALL_DIR    "lib${LIB_SUFFIX}"
+     CACHE PATH "Install dir for libraries")
+   if(ENABLE_VERSIONED_FORMATS)
+@@ -57,18 +57,8 @@ if(UNIX)
+ else() # Windows - bin dir = lib dir to load libraries
+   set(LIB_INSTALL_DIR "${BIN_INSTALL_DIR}"
+       CACHE PATH "Install dir for libraries")
+-  if(MSVC)
+-    set(OB_PLUGIN_INSTALL_DIR "${BIN_INSTALL_DIR}"
++  set(OB_PLUGIN_INSTALL_DIR "${BIN_INSTALL_DIR}"
+       CACHE PATH "Install dir for plugins")
+-  else()
+-    if(ENABLE_VERSIONED_FORMATS)
+-      set(OB_PLUGIN_INSTALL_DIR "lib${LIB_SUFFIX}/openbabel/${BABEL_VERSION}"
+-        CACHE PATH "Install dir for plugins")
+-    else(ENABLE_VERSIONED_FORMATS)
+-      set(OB_PLUGIN_INSTALL_DIR "lib${LIB_SUFFIX}/openbabel"
+-        CACHE PATH "Install dir for plugins")
+-    endif(ENABLE_VERSIONED_FORMATS)
+-  endif()
+ endif()
+ set(OB_INCLUDE_DIRS "include/openbabel-2.0")
+ set(OB_EXPORTS_FILE "${openbabel_BINARY_DIR}/OpenBabel2_EXPORTS.cmake")
+--- origsrc/openbabel-2.3.2/src/formats/CMakeLists.txt	2012-10-03 14:13:05.000000000 -0500
++++ src/openbabel-2.3.2/src/formats/CMakeLists.txt	2014-02-04 22:14:45.375318000 -0600
+@@ -257,6 +257,9 @@ foreach(format ${formats})
+                         PREFIX ""
+                         SUFFIX ${MODULE_EXTENSION})
+ endforeach(format)
++if(MINGW)
++   target_link_libraries(gamessukformat regex)
++endif(MINGW)
+ endif(MSVC)
+ 
+ if(NOT MINIMAL_BUILD)

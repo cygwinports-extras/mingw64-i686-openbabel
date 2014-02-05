@@ -1,0 +1,36 @@
+CROSS_HOST="i686-w64-mingw32"
+inherit cross cmake
+
+NAME="mingw64-i686-openbabel"
+VERSION=2.3.2
+RELEASE=1
+CATEGORY="Science"
+SUMMARY="Open Babel chemistry toolkit"
+DESCRIPTION="Open Babel is a chemical toolbox designed to speak the many
+languages of chemical data. It's an open, collaborative project allowing
+anyone to search, convert, analyze, or store data from molecular modeling,
+chemistry, solid-state materials, biochemistry, or related areas."
+HOMEPAGE="http://openbabel.sourceforge.net/"
+SRC_URI="mirror://sourceforge/openbabel/openbabel-${VERSION}.tar.gz"
+SRC_DIR="openbabel-${VERSION}"
+PATCH_URI="2.3.2-mingw-plugins.patch"
+
+# plugins use .obf extension, missed by dependency detection
+REQUIRES+=" mingw64-i686-cairo mingw64-i686-libgnurx mingw64-i686-libxml2"
+
+CYGCMAKE_ARGS="
+	-DBUILD_GUI=OFF
+	-DEIGEN3_INCLUDE_DIR=/usr/include/eigen3
+	-DENABLE_VERSIONED_FORMATS=OFF
+	-DPERL_BINDINGS=OFF
+	-DPYTHON_BINDINGS=OFF
+	-DRUBY_BINDINGS=OFF
+"
+
+src_install() {
+	cd ${B}
+	cyginstall
+
+	rm -f ${D}${CROSS_BINDIR}/*.exe
+	rm -f ${D}${CROSS_DATADIR}/man/man1/*
+}
